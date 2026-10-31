@@ -1,117 +1,102 @@
 #include <iostream>
 #include <vector>
-#include <typeinfo>
-#include <stdexcept>
 
 using namespace std;
 
-
+// 1. Base Interface: Every account can receive deposits
 class DepositOnlyAccount {
 public:
     virtual void deposit(double amount) = 0;
+    virtual ~DepositOnlyAccount() = default;
 };
 
+// 2. Sub-Interface: Only withdrawable accounts support withdrawals
 class WithdrawableAccount : public DepositOnlyAccount {
 public:
     virtual void withdraw(double amount) = 0;
 };
 
+// --- Concrete Account Implementations ---
+
 class SavingAccount : public WithdrawableAccount {
 private:
-    double balance;
+    double balance = 0;
 
 public:
-    SavingAccount() { 
-        balance = 0; 
-    }
-
-    void deposit(double amount) {
+    void deposit(double amount) override {
         balance += amount;
-        cout << "Deposited: " << amount << " in Savings Account. New Balance: " << balance << endl;
+        cout << "Savings Account: Deposited " << amount << ", Balance: " << balance << endl;
     }
 
-    void withdraw(double amount) {
+    void withdraw(double amount) override {
         if (balance >= amount) {
             balance -= amount;
-            cout << "Withdrawn: " << amount << " from Savings Account. New Balance: " << balance << endl;
+            cout << "Savings Account: Withdrew " << amount << ", Balance: " << balance << endl;
         } else {
-            cout << "Insufficient funds in Savings Account!\n";
+            cout << "Savings Account: Insufficient funds!\n";
         }
     }
 };
 
 class CurrentAccount : public WithdrawableAccount {
-    private:
-        double balance;
-    
-    public:
-        CurrentAccount() { 
-            balance = 0; 
+private:
+    double balance = 0;
+
+public:
+    void deposit(double amount) override {
+        balance += amount;
+        cout << "Current Account: Deposited " << amount << ", Balance: " << balance << endl;
+    }
+
+    void withdraw(double amount) override {
+        if (balance >= amount) {
+            balance -= amount;
+            cout << "Current Account: Withdrew " << amount << ", Balance: " << balance << endl;
+        } else {
+            cout << "Current Account: Insufficient funds!\n";
         }
-    
-        void deposit(double amount) {
-            balance += amount;
-            cout << "Deposited: " << amount << " in Current Account. New Balance: " << balance << endl;
-        }
-    
-        void withdraw(double amount) {
-            if (balance >= amount) {
-                balance -= amount;
-                cout << "Withdrawn: " << amount << " from Current Account. New Balance: " << balance << endl;
-            } else {
-                cout << "Insufficient funds in Current Account!\n";
-            }
-        }
-    };
+    }
+};
 
 class FixedTermAccount : public DepositOnlyAccount {
 private:
-    double balance;
+    double balance = 0;
 
 public:
-    FixedTermAccount() { 
-        balance = 0; 
-    }
-
-    void deposit(double amount) {
+    void deposit(double amount) override {
         balance += amount;
-        cout << "Deposited: " << amount << " in Fixed Term Account. New Balance: " << balance << endl;
+        cout << "Fixed Term Account: Deposited " << amount << ", Balance: " << balance << endl;
     }
+    // No withdraw() method here — respects LSP by not promising what it cannot deliver
 };
 
-class BankClient {
-private:
-    vector<WithdrawableAccount*> withdrawableAccounts;
-    vector<DepositOnlyAccount*> depositOnlyAccounts;
-
-public:
-    BankClient( vector<WithdrawableAccount*> withdrawableAccounts, 
-        vector<DepositOnlyAccount*> depositOnlyAccounts) { 
-        this->withdrawableAccounts = withdrawableAccounts; 
-        this->depositOnlyAccounts = depositOnlyAccounts;
-    }
-
-    void processTransactions() {
-        for (WithdrawableAccount* acc : withdrawableAccounts) {
-            acc->deposit(1000);
-            acc->withdraw(500); 
-        }
-        for (DepositOnlyAccount* acc : depositOnlyAccounts) {
-            acc->deposit(5000);
-        }
-    }
-};
+// Client function demonstrating LSP:
+// Any WithdrawableAccount can be safely substituted here without runtime errors.
+void processWithdrawal(WithdrawableAccount* acc, double amount) {
+    acc->withdraw(amount);
+}
 
 int main() {
     SavingAccount saving;
     CurrentAccount current;
     FixedTermAccount fixedTerm;
 
-    vector<WithdrawableAccount*> withdrawableAccounts = { &saving, &current };
-    vector<DepositOnlyAccount*> depositOnlyAccounts = { &fixedTerm };
+    // 1. Deposit into ALL accounts (all are substitutable for DepositOnlyAccount)
+    vector<DepositOnlyAccount*> allAccounts = { &saving, &current, &fixedTerm };
+    for (DepositOnlyAccount* acc : allAccounts) {
+        acc->deposit(1000);
+    }
 
-    BankClient client(withdrawableAccounts, depositOnlyAccounts);
-    client.processTransactions();
+    cout << endl;
+
+    // 2. Withdraw from accounts that actually support withdrawal
+    vector<WithdrawableAccount*> withdrawableAccounts = { &saving, &current };
+    for (WithdrawableAccount* acc : withdrawableAccounts) {
+        processWithdrawal(acc, 500);
+    }
+
+    // FixedTermAccount cannot be added to withdrawableAccounts or passed to processWithdrawal.
+    // processWithdrawal(&fixedTerm, 500); // ❌ Compile-time error! (Prevents runtime bugs)
 
     return 0;
 }

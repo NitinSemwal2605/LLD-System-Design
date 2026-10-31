@@ -226,7 +226,7 @@ class CurrentAccount : public WithdrawableAccount { /* deposit & withdraw */ };
 class FixedTermAccount : public DepositOnlyAccount { /* deposit ONLY */ };
 ```
 
-Now, `BankClient` accepts `WithdrawableAccount*` when it needs to withdraw, guaranteeing at **compile time** that no runtime surprise or invalid withdrawal will ever occur!
+Now, functions that process withdrawals accept `WithdrawableAccount*`, guaranteeing at **compile time** that no runtime surprise or invalid withdrawal will ever occur!
 
 ---
 
@@ -243,11 +243,17 @@ int main() {
     CurrentAccount current;
     FixedTermAccount fixedTerm;
 
-    vector<WithdrawableAccount*> withdrawableAccounts = { &saving, &current };
-    vector<DepositOnlyAccount*> depositOnlyAccounts = { &fixedTerm };
+    // 1. All accounts can deposit
+    vector<DepositOnlyAccount*> allAccounts = { &saving, &current, &fixedTerm };
+    for (DepositOnlyAccount* acc : allAccounts) {
+        acc->deposit(1000);
+    }
 
-    BankClient client(withdrawableAccounts, depositOnlyAccounts);
-    client.processTransactions(); // Clean, exception-free, leak-free
+    // 2. Only withdrawable accounts can withdraw (compile-time safety!)
+    vector<WithdrawableAccount*> withdrawableAccounts = { &saving, &current };
+    for (WithdrawableAccount* acc : withdrawableAccounts) {
+        processWithdrawal(acc, 500);
+    }
 
     return 0;
 }
