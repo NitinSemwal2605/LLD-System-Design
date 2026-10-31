@@ -1,0 +1,83 @@
+# Compiled Object files
+*.o
+*.obj
+*.slo
+*.lo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries and Shared Objects
+*.lib
+*.a
+*.la
+*.lai
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Executables
+*.exe
+*.out
+*.app
+*.bin
+*.elf
+
+# Debug artifacts
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Build & output directories
+build/
+bin/
+out/
+dist/
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor & IDE artifacts
+.idea/
+*.swp
+*.swo
+*~
+*.log
+
+# Ignore extensionless binaries generated next to source files
+*/*
+!*/*/
+!*/*.cpp
+!*/*.c
+!*/*.h
+!*/*.hpp
+!*/*.md
+!*/*.json
+!*/*.txt
+!*/*.png
+!*/*.jpg
+!*/*.jpeg
+!*/*.svg
+
+*/*/*
+!*/*/*/
+!*/*/*.cpp
+!*/*/*.c
+!*/*/*.h
+!*/*/*.hpp
+!*/*/*.md
+!*/*/*.json
+!*/*/*.txt
+!*/*/*.png
+!*/*/*.jpg
+!*/*/*.jpeg
+!*/*/*.svg
