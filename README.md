@@ -9,6 +9,12 @@ A comprehensive repository for mastering **Object-Oriented Programming (OOP)**, 
 ```plaintext
 LLD/
 ├── 1_OOPS/                  # OOP Fundamentals in C++
+├── 2_SOLID/                 # SOLID Principles
+│   ├── SRP/                 # Single Responsibility Principle
+│   ├── OCP/                 # Open/Closed Principle
+│   ├── LSP/                 # Liskov Substitution Principle
+│   └── Solid.md             # Comprehensive SOLID Revision Guide
+├── .gitignore
 └── README.md
 ```
 
@@ -37,6 +43,20 @@ Hands-on C++ implementations demonstrating foundational and intermediate OOP con
 
 ---
 
+## 2. SOLID Design Principles (`2_SOLID`)
+
+Detailed before-and-after implementations for each principle, accompanied by the in-depth revision guide in [`Solid.md`](2_SOLID/Solid.md):
+
+| Principle | Concept | Code Examples | Description |
+|---|---|---|---|
+| **S** | **Single Responsibility Principle** | [Violated](2_SOLID/SRP/SRP_violated.cpp) \| [Followed](2_SOLID/SRP/SRP_followed.cpp) | Decomposing a God-class (`ShoppingCart`) into separate domain, printing, and storage classes. |
+| **O** | **Open/Closed Principle** | [Violated](2_SOLID/OCP/OCP_violated.cpp) \| [Followed](2_SOLID/OCP/OCP_followed.cpp) | Using a polymorphic `Persistence` interface to add database strategies without modifying existing code. |
+| **L** | **Liskov Substitution Principle** | [Violated](2_SOLID/LSP/LSP_violated.cpp) \| [Followed](2_SOLID/LSP/LSP_followed.cpp) | Segregating `DepositOnlyAccount` from `WithdrawableAccount` so child types don't throw unexpected runtime exceptions. |
+
+📖 **For full revision notes, architecture diagrams, and interview prep:** See [`2_SOLID/Solid.md`](2_SOLID/Solid.md).
+
+---
+
 ## 🛠️ How to Compile and Run
 
 You can compile and run any individual file using `g++`:
@@ -54,7 +74,7 @@ Or run via **VS Code / Antigravity IDE** using the default build task (`Ctrl` + 
 ## 🚀 Roadmap
 
 - [x] **1. OOP Fundamentals**
-- [ ] **2. SOLID Principles** (SRP, OCP, LSP, ISP, DIP with Before & After examples)
+- [x] **2. SOLID Principles** (SRP, OCP, LSP covered with Before & After examples)
 - [ ] **3. Creational Design Patterns** (Factory, Abstract Factory, Singleton, Builder, Prototype)
 - [ ] **4. Structural Design Patterns** (Adapter, Decorator, Facade, Composite, Proxy)
 - [ ] **5. Behavioral Design Patterns** (Strategy, Observer, Command, State, Chain of Responsibility)
