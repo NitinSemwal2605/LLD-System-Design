@@ -45,6 +45,7 @@ dist/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.vscode/
 
 # Editor & IDE artifacts
 .idea/
