@@ -8,7 +8,10 @@ public:
     string name;
     double price;
 
-    Product(string name, double price) : name(name), price(price) {}
+    Product(string name, double price){
+        this->name = name;
+        this->price = price;
+    }
 };
 
 // 1. Follows SRP: Solely responsible for Cart business logic

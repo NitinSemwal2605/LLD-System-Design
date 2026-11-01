@@ -74,36 +74,32 @@ public:
     }
 };
 
-class BankClient {
-private:
-    vector<Account*> accounts;
-
-public:
-    BankClient(const vector<Account*>& accounts) : accounts(accounts) {}
-
-    void processTransactions() {
-        for (Account* acc : accounts) {
-            acc->deposit(1000);
-
-            // Expects every account to withdraw safely; crashes on FixedTermAccount
-            try {
-                acc->withdraw(500);
-            } catch (const logic_error& e) {
-                cout << "Exception caught: " << e.what() << endl;
-            }
-        }
-    }
-};
+// Client function: Expects all Accounts can safely withdraw
+void makeWithdrawal(Account& acc, double amount) {
+    acc.withdraw(amount);
+}
 
 int main() {
     SavingAccount saving;
     CurrentAccount current;
     FixedTermAccount fixedTerm;
 
+    // 1. All accounts can deposit
     vector<Account*> accounts = { &saving, &current, &fixedTerm };
+    for (auto acc : accounts) {
+        acc->deposit(1000);
+    }
 
-    BankClient client(accounts);
-    client.processTransactions();
+    // 2. Withdraw from accounts
+    makeWithdrawal(saving, 500);
+    makeWithdrawal(current, 500);
+
+    // Violating LSP: Compiles fine, but crashes at runtime!
+    try {
+        makeWithdrawal(fixedTerm, 500);
+    } catch (const logic_error& e) {
+        cout << "Exception caught: " << e.what() << endl;
+    }
 
     return 0;
 }

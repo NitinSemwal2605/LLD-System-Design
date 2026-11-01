@@ -226,28 +226,29 @@ class CurrentAccount : public WithdrawableAccount { /* deposit & withdraw */ };
 class FixedTermAccount : public DepositOnlyAccount { /* deposit ONLY */ };
 ```
 
-Now, `BankClient` accepts `WithdrawableAccount*` when it needs to withdraw, guaranteeing at **compile time** that no runtime surprise or invalid withdrawal will ever occur!
-
----
-
-## 💡 C++ Best Practice Highlight: Stack Allocation & RAII
-
-Throughout modern C++ and Low-Level Design:
-* Prefer **stack allocation** (`ShoppingCart cart;`) over bare heap allocation (`ShoppingCart* cart = new ShoppingCart();`).
-* Stack objects are cleaned up automatically when they leave scope (RAII), preventing memory leaks without needing manual `delete`.
-* Use the **dot operator (`.`)** for direct objects and pass by pointer (`&obj`) or reference (`Type&`) when sharing across classes:
+Now, functions that process withdrawals accept `WithdrawableAccount&`, guaranteeing at **compile time** that no runtime surprise or invalid withdrawal will ever occur:
 
 ```cpp
+void makeWithdrawal(WithdrawableAccount& acc, double amount) {
+    acc.withdraw(amount);
+}
+
 int main() {
     SavingAccount saving;
     CurrentAccount current;
     FixedTermAccount fixedTerm;
 
-    vector<WithdrawableAccount*> withdrawableAccounts = { &saving, &current };
-    vector<DepositOnlyAccount*> depositOnlyAccounts = { &fixedTerm };
+    // 1. All accounts can deposit
+    vector<DepositOnlyAccount*> accounts = { &saving, &current, &fixedTerm };
+    for (auto acc : accounts) {
+        acc->deposit(1000);
+    }
 
-    BankClient client(withdrawableAccounts, depositOnlyAccounts);
-    client.processTransactions(); // Clean, exception-free, leak-free
+    // 2. Only withdrawable accounts can withdraw
+    makeWithdrawal(saving, 500);
+    makeWithdrawal(current, 500);
+
+    // makeWithdrawal(fixedTerm, 500); // ❌ Compile-time error! (Prevents runtime bugs)
 
     return 0;
 }

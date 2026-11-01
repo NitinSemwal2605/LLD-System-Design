@@ -8,7 +8,10 @@ public:
     string name;
     double price;
 
-    Product(string name, double price) : name(name), price(price) {}
+    Product(string name, double price){
+        this->name = name;
+        this->price = price;
+    }
 };
 
 class ShoppingCart {
@@ -38,7 +41,9 @@ private:
     const ShoppingCart& cart;
 
 public:
-    ShoppingCartPrinter(const ShoppingCart& cart) : cart(cart) {}
+    ShoppingCartPrinter(const ShoppingCart& cart){
+        this->cart = cart;
+    }
 
     void printInvoice() const {
         cout << "Shopping Cart Invoice:\n";

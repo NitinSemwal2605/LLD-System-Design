@@ -9,7 +9,10 @@ public:
     string name;
     double price;
  
-    Product(string name, double price) : name(name), price(price) {}
+    Product(string name, double price){
+        this->name = name;
+        this->price = price;
+    }
 };
 
 // Violating SRP: ShoppingCart handles business logic, presentation, and persistence

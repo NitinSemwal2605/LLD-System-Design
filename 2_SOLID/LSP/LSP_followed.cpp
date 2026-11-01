@@ -74,39 +74,27 @@ public:
     }
 };
 
-class BankClient {
-private:
-    vector<WithdrawableAccount*> withdrawableAccounts;
-    vector<DepositOnlyAccount*> depositOnlyAccounts;
-
-public:
-    BankClient(const vector<WithdrawableAccount*>& withdrawableAccounts, 
-               const vector<DepositOnlyAccount*>& depositOnlyAccounts)
-        : withdrawableAccounts(withdrawableAccounts), 
-          depositOnlyAccounts(depositOnlyAccounts) {}
-
-    void processTransactions() {
-        for (WithdrawableAccount* acc : withdrawableAccounts) {
-            acc->deposit(1000);
-            acc->withdraw(500); 
-        }
-
-        for (DepositOnlyAccount* acc : depositOnlyAccounts) {
-            acc->deposit(5000);
-        }
-    }
-};
+// Client function: Only accepts accounts that genuinely support withdrawal
+void makeWithdrawal(WithdrawableAccount& acc, double amount) {
+    acc.withdraw(amount);
+}
 
 int main() {
     SavingAccount saving;
     CurrentAccount current;
     FixedTermAccount fixedTerm;
 
-    vector<WithdrawableAccount*> withdrawableAccounts = { &saving, &current };
-    vector<DepositOnlyAccount*> depositOnlyAccounts = { &fixedTerm };
+    // 1. All accounts can deposit
+    vector<DepositOnlyAccount*> accounts = { &saving, &current, &fixedTerm };
+    for (auto acc : accounts) {
+        acc->deposit(1000);
+    }
 
-    BankClient client(withdrawableAccounts, depositOnlyAccounts);
-    client.processTransactions();
+    // 2. Only withdrawable accounts can withdraw
+    makeWithdrawal(saving, 500);
+    makeWithdrawal(current, 500);
+
+    // makeWithdrawal(fixedTerm, 500); // ❌ Compile error: prevents runtime crash!
 
     return 0;
 }
