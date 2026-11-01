@@ -1,11 +1,14 @@
 #include <iostream>
 #include <vector>
+#include <stdexcept>
+
 using namespace std;
 
 class Account {
 public:
     virtual void deposit(double amount) = 0;
     virtual void withdraw(double amount) = 0;
+    virtual ~Account() = default;
 };
 
 class SavingAccount : public Account {
@@ -13,16 +16,14 @@ private:
     double balance;
 
 public:
-    SavingAccount() { 
-        balance = 0; 
-    }
+    SavingAccount() : balance(0) {}
 
-    void deposit(double amount) {
+    void deposit(double amount) override {
         balance += amount;
         cout << "Deposited: " << amount << " in Savings Account. New Balance: " << balance << endl;
     }
 
-    void withdraw(double amount) {
+    void withdraw(double amount) override {
         if (balance >= amount) {
             balance -= amount;
             cout << "Withdrawn: " << amount << " from Savings Account. New Balance: " << balance << endl;
@@ -37,16 +38,14 @@ private:
     double balance;
 
 public:
-    CurrentAccount() { 
-        balance = 0; 
-    }
+    CurrentAccount() : balance(0) {}
 
-    void deposit(double amount) {
+    void deposit(double amount) override {
         balance += amount;
         cout << "Deposited: " << amount << " in Current Account. New Balance: " << balance << endl;
     }
 
-    void withdraw(double amount) {
+    void withdraw(double amount) override {
         if (balance >= amount) {
             balance -= amount;
             cout << "Withdrawn: " << amount << " from Current Account. New Balance: " << balance << endl;
@@ -56,43 +55,41 @@ public:
     }
 };
 
+// Violating LSP: FixedTermAccount cannot support withdrawal and throws an exception
 class FixedTermAccount : public Account {
 private:
     double balance;
 
 public:
-    FixedTermAccount() { 
-        balance = 0; 
-    }
+    FixedTermAccount() : balance(0) {}
 
-    void deposit(double amount) {
+    void deposit(double amount) override {
         balance += amount;
         cout << "Deposited: " << amount << " in Fixed Term Account. New Balance: " << balance << endl;
     }
 
-    void withdraw(double amount) {
+    // Violating LSP: Breaks base class contract
+    void withdraw(double amount) override {
         throw logic_error("Withdrawal not allowed in Fixed Term Account!");
     }
 };
-    
+
 class BankClient {
 private:
     vector<Account*> accounts;
 
 public:
-    BankClient(vector<Account*> accounts) { 
-        this->accounts = accounts; 
-    }
+    BankClient(const vector<Account*>& accounts) : accounts(accounts) {}
 
     void processTransactions() {
         for (Account* acc : accounts) {
-            acc->deposit(1000);  //All accounts allow deposits
+            acc->deposit(1000);
 
-            //Assuming all accounts support withdrawal (LSP Violation)
+            // Expects every account to withdraw safely; crashes on FixedTermAccount
             try {
                 acc->withdraw(500);
             } catch (const logic_error& e) {
-                cout << "Exception: " << e.what() << endl;
+                cout << "Exception caught: " << e.what() << endl;
             }
         }
     }
@@ -106,7 +103,7 @@ int main() {
     vector<Account*> accounts = { &saving, &current, &fixedTerm };
 
     BankClient client(accounts);
-    client.processTransactions(); // Throws exception when withdrawing from FixedTermAccount
+    client.processTransactions();
 
     return 0;
 }

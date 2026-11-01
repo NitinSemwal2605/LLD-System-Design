@@ -1,16 +1,16 @@
 #include <iostream>
 #include <vector>
-#include <typeinfo>
-#include <stdexcept>
 
 using namespace std;
 
-
+// Base interface: All accounts support deposit
 class DepositOnlyAccount {
 public:
     virtual void deposit(double amount) = 0;
+    virtual ~DepositOnlyAccount() = default;
 };
 
+// Sub-interface: Only accounts that support withdrawal inherit this
 class WithdrawableAccount : public DepositOnlyAccount {
 public:
     virtual void withdraw(double amount) = 0;
@@ -21,16 +21,14 @@ private:
     double balance;
 
 public:
-    SavingAccount() { 
-        balance = 0; 
-    }
+    SavingAccount() : balance(0) {}
 
-    void deposit(double amount) {
+    void deposit(double amount) override {
         balance += amount;
         cout << "Deposited: " << amount << " in Savings Account. New Balance: " << balance << endl;
     }
 
-    void withdraw(double amount) {
+    void withdraw(double amount) override {
         if (balance >= amount) {
             balance -= amount;
             cout << "Withdrawn: " << amount << " from Savings Account. New Balance: " << balance << endl;
@@ -41,39 +39,36 @@ public:
 };
 
 class CurrentAccount : public WithdrawableAccount {
-    private:
-        double balance;
-    
-    public:
-        CurrentAccount() { 
-            balance = 0; 
-        }
-    
-        void deposit(double amount) {
-            balance += amount;
-            cout << "Deposited: " << amount << " in Current Account. New Balance: " << balance << endl;
-        }
-    
-        void withdraw(double amount) {
-            if (balance >= amount) {
-                balance -= amount;
-                cout << "Withdrawn: " << amount << " from Current Account. New Balance: " << balance << endl;
-            } else {
-                cout << "Insufficient funds in Current Account!\n";
-            }
-        }
-    };
+private:
+    double balance;
 
+public:
+    CurrentAccount() : balance(0) {}
+
+    void deposit(double amount) override {
+        balance += amount;
+        cout << "Deposited: " << amount << " in Current Account. New Balance: " << balance << endl;
+    }
+
+    void withdraw(double amount) override {
+        if (balance >= amount) {
+            balance -= amount;
+            cout << "Withdrawn: " << amount << " from Current Account. New Balance: " << balance << endl;
+        } else {
+            cout << "Insufficient funds in Current Account!\n";
+        }
+    }
+};
+
+// FixedTermAccount only inherits DepositOnlyAccount (respects LSP)
 class FixedTermAccount : public DepositOnlyAccount {
 private:
     double balance;
 
 public:
-    FixedTermAccount() { 
-        balance = 0; 
-    }
+    FixedTermAccount() : balance(0) {}
 
-    void deposit(double amount) {
+    void deposit(double amount) override {
         balance += amount;
         cout << "Deposited: " << amount << " in Fixed Term Account. New Balance: " << balance << endl;
     }
@@ -85,17 +80,17 @@ private:
     vector<DepositOnlyAccount*> depositOnlyAccounts;
 
 public:
-    BankClient( vector<WithdrawableAccount*> withdrawableAccounts, 
-        vector<DepositOnlyAccount*> depositOnlyAccounts) { 
-        this->withdrawableAccounts = withdrawableAccounts; 
-        this->depositOnlyAccounts = depositOnlyAccounts;
-    }
+    BankClient(const vector<WithdrawableAccount*>& withdrawableAccounts, 
+               const vector<DepositOnlyAccount*>& depositOnlyAccounts)
+        : withdrawableAccounts(withdrawableAccounts), 
+          depositOnlyAccounts(depositOnlyAccounts) {}
 
     void processTransactions() {
         for (WithdrawableAccount* acc : withdrawableAccounts) {
             acc->deposit(1000);
             acc->withdraw(500); 
         }
+
         for (DepositOnlyAccount* acc : depositOnlyAccounts) {
             acc->deposit(5000);
         }

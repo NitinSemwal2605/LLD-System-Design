@@ -3,52 +3,49 @@
 
 using namespace std;
 
-// Product class representing any item of any ECommerce.
+// Product entity representing an item in eCommerce
 class Product {
 public:
     string name;
     double price;
  
-    Product(string name, double price) {
-        this->name = name;
-        this->price = price;
-    }
+    Product(string name, double price) : name(name), price(price) {}
 };
 
-// Violating SRP: ShoppingCart is handling multiple responsibilities
+// Violating SRP: ShoppingCart handles business logic, presentation, and persistence
 class ShoppingCart {
 private:
-    vector<Product*> products; 
+    vector<Product> products;
 
 public:
-    void addProduct(Product* p) { 
+    // 1. Business Logic
+    void addProduct(const Product& p) { 
         products.push_back(p);
     }
 
-    const vector<Product*>& getProducts() { 
+    const vector<Product>& getProducts() const { 
         return products;
-    } 
+    }
 
-    // 1. Calculates total price in cart.
-    double calculateTotal() {
+    double calculateTotal() const {
         double total = 0;
-        for (auto p : products) {
-            total += p->price;
+        for (const auto& p : products) {
+            total += p.price;
         }
         return total;
     }
 
-    // 2. Violating SRP - Prints invoice (Should be in a separate class)
-    void printInvoice() {
+    // 2. Violating SRP: Presentation should not be in the cart class
+    void printInvoice() const {
         cout << "Shopping Cart Invoice:\n";
-        for (auto p : products) {
-            cout << p->name << " - Rs " << p->price << endl;
+        for (const auto& p : products) {
+            cout << p.name << " - Rs " << p.price << endl;
         }
         cout << "Total: Rs " << calculateTotal() << endl;
     }
 
-    // 3. Violating SRP - Saves to DB (Should be in a separate class)
-    void saveToDatabase() {
+    // 3. Violating SRP: Persistence should not be in the cart class
+    void saveToDatabase() const {
         cout << "Saving shopping cart to database..." << endl;
     }
 };
@@ -56,8 +53,8 @@ public:
 int main() {
     ShoppingCart cart;
     
-    cart.addProduct(new Product("Laptop", 50000));
-    cart.addProduct(new Product("Mouse", 2000));
+    cart.addProduct(Product("Laptop", 50000));
+    cart.addProduct(Product("Mouse", 2000));
 
     cart.printInvoice();  
     cart.saveToDatabase();

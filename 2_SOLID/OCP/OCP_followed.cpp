@@ -3,106 +3,96 @@
 
 using namespace std;
 
-// Product class representing any item in eCommerce.
 class Product {
 public:
     string name;
     double price;
 
-    Product(string name, double price) {
-        this->name = name;
-        this->price = price;
-    }
+    Product(string name, double price) : name(name), price(price) {}
 };
 
-//1. ShoppingCart: Only responsible for Cart related business logic.
 class ShoppingCart {
 private:
-    vector<Product*> products; // Store heap-allocated products
+    vector<Product> products;
 
 public:
-    void addProduct(Product* p) { 
+    void addProduct(const Product& p) { 
         products.push_back(p);
     }
 
-    const vector<Product*>& getProducts() { 
+    const vector<Product>& getProducts() const { 
         return products;
     } 
 
-    //Calculates total price in cart.
-    double calculateTotal() {
+    double calculateTotal() const {
         double total = 0;
-        for (auto p : products) {
-            total += p->price;
+        for (const auto& p : products) {
+            total += p.price;
         }
         return total;
     }
 };
 
-// 2. ShoppingCartPrinter: Only responsible for printing invoices
 class ShoppingCartPrinter {
 private:
-    ShoppingCart* cart; 
+    const ShoppingCart& cart;
 
 public:
-    ShoppingCartPrinter(ShoppingCart* cart) { 
-        this->cart = cart; 
-    }
+    ShoppingCartPrinter(const ShoppingCart& cart) : cart(cart) {}
 
-    void printInvoice() {
+    void printInvoice() const {
         cout << "Shopping Cart Invoice:\n";
-        for (auto p : cart->getProducts()) {
-            cout << p->name << " - Rs " << p->price << endl;
+        for (const auto& p : cart.getProducts()) {
+            cout << p.name << " - Rs " << p.price << endl;
         }
-        cout << "Total: Rs " << cart->calculateTotal() << endl;
+        cout << "Total: Rs " << cart.calculateTotal() << endl;
     }
 };
 
-//Abstract class
+// Follows OCP: Abstract interface open for extension, closed for modification
 class Persistence {
-private:
-    ShoppingCart* cart;
-
 public:
-    virtual void save(ShoppingCart* cart) = 0; // Pure virtual function
+    virtual void save(const ShoppingCart& cart) = 0;
+    virtual ~Persistence() = default;
 };
 
 class SQLPersistence : public Persistence {
 public:
-    void save(ShoppingCart* cart) override {
+    void save(const ShoppingCart& cart) override {
         cout << "Saving shopping cart to SQL DB..." << endl;
     }
 };
 
 class MongoPersistence : public Persistence {
 public:
-    void save(ShoppingCart* cart) override {
+    void save(const ShoppingCart& cart) override {
         cout << "Saving shopping cart to MongoDB..." << endl;
     }
 };
 
 class FilePersistence : public Persistence {
 public:
-    void save(ShoppingCart* cart) override {
+    void save(const ShoppingCart& cart) override {
         cout << "Saving shopping cart to a file..." << endl;
     }
 };
 
 int main() {
     ShoppingCart cart;
-    cart.addProduct(new Product("Laptop", 50000));
-    cart.addProduct(new Product("Mouse", 2000));
 
-    ShoppingCartPrinter printer(&cart);
+    cart.addProduct(Product("Laptop", 50000));
+    cart.addProduct(Product("Mouse", 2000));
+
+    ShoppingCartPrinter printer(cart);
     printer.printInvoice();
 
     SQLPersistence sqlDb;
     MongoPersistence mongoDb;
     FilePersistence fileDb;
 
-    sqlDb.save(&cart);    // Save to SQL database
-    mongoDb.save(&cart);  // Save to MongoDB
-    fileDb.save(&cart);   // Save to File
+    sqlDb.save(cart);
+    mongoDb.save(cart);
+    fileDb.save(cart);
 
     return 0;
 }

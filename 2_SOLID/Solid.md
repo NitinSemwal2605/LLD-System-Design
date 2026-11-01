@@ -36,12 +36,12 @@ In [`SRP_violated.cpp`](file:///home/nitin/Desktop/LLD/2_SOLID/SRP/SRP_violated.
 ```cpp
 // ❌ VIOLATION: ShoppingCart does everything
 class ShoppingCart {
-    vector<Product*> products;
+    vector<Product> products;
 public:
-    void addProduct(Product* p);
-    double calculateTotal();
-    void printInvoice();    // ❌ Belongs to presentation
-    void saveToDatabase();  // ❌ Belongs to persistence
+    void addProduct(const Product& p);
+    double calculateTotal() const;
+    void printInvoice() const;    // ❌ Belongs to presentation
+    void saveToDatabase() const;  // ❌ Belongs to persistence
 };
 ```
 
@@ -55,25 +55,25 @@ In [`SRP_followed.cpp`](file:///home/nitin/Desktop/LLD/2_SOLID/SRP/SRP_followed.
 ```cpp
 // ✅ FOLLOWED: Each class has a single, well-defined job
 class ShoppingCart {
-    vector<Product*> products;
+    vector<Product> products;
 public:
-    void addProduct(Product* p) { products.push_back(p); }
-    double calculateTotal() { /* ... */ }
-    const vector<Product*>& getProducts() { return products; }
+    void addProduct(const Product& p) { products.push_back(p); }
+    double calculateTotal() const { /* ... */ }
+    const vector<Product>& getProducts() const { return products; }
 };
 
 class ShoppingCartPrinter {
-    ShoppingCart* cart;
+    const ShoppingCart& cart; // Holds reference (no pointers)
 public:
-    ShoppingCartPrinter(ShoppingCart* cart) : cart(cart) {}
-    void printInvoice() { /* prints cart items & total */ }
+    ShoppingCartPrinter(const ShoppingCart& cart) : cart(cart) {}
+    void printInvoice() const { /* prints cart items & total */ }
 };
 
 class ShoppingCartStorage {
-    ShoppingCart* cart;
+    const ShoppingCart& cart; // Holds reference (no pointers)
 public:
-    ShoppingCartStorage(ShoppingCart* cart) : cart(cart) {}
-    void saveToDatabase() { /* persists cart */ }
+    ShoppingCartStorage(const ShoppingCart& cart) : cart(cart) {}
+    void saveToDatabase() const { /* persists cart */ }
 };
 ```
 
