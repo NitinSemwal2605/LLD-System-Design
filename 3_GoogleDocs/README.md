@@ -151,3 +151,4 @@ The refactored design decomposes the system into decoupled abstractions and sing
 
 - `BadDesign/DocumentEditor.cpp`: Monolithic implementation demonstrating coupling, string-parsing type checks, and direct disk dependencies.
 - `GoodDesign/DocumentEditor.cpp`: Polymorphic, SOLID-compliant implementation utilizing element abstraction, dependency injection, and decoupled persistence strategies.
+
