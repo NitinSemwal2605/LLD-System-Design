@@ -13,6 +13,12 @@ LLD/
 │   ├── SRP/                 # Single Responsibility Principle
 │   ├── OCP/                 # Open/Closed Principle
 │   ├── LSP/                 # Liskov Substitution Principle
+│   ├── ISP/                 # Interface Segregation Principle
+│   ├── DIP/                 # Dependency Inversion Principle
+│   ├── LSP-Rules/           # Deep-dive into LSP rules
+│   │   ├── SingatureRules/  # Return type, argument, exception rules
+│   │   ├── MethodRules/     # Precondition & postcondition rules
+│   │   └── PropertiesRules/ # Class invariants & history constraint
 │   └── Solid.md             # Comprehensive SOLID Revision Guide
 ├── .gitignore
 └── README.md
@@ -52,6 +58,20 @@ Detailed before-and-after implementations for each principle, accompanied by the
 | **S** | **Single Responsibility Principle** | [Violated](2_SOLID/SRP/SRP_violated.cpp) \| [Followed](2_SOLID/SRP/SRP_followed.cpp) | Decomposing a God-class (`ShoppingCart`) into separate domain, printing, and storage classes. |
 | **O** | **Open/Closed Principle** | [Violated](2_SOLID/OCP/OCP_violated.cpp) \| [Followed](2_SOLID/OCP/OCP_followed.cpp) | Using a polymorphic `Persistence` interface to add database strategies without modifying existing code. |
 | **L** | **Liskov Substitution Principle** | [Violated](2_SOLID/LSP/LSP_violated.cpp) \| [Followed](2_SOLID/LSP/LSP_followed.cpp) | Segregating `DepositOnlyAccount` from `WithdrawableAccount` so child types don't throw unexpected runtime exceptions. |
+| **I** | **Interface Segregation Principle** | [Violated](2_SOLID/ISP/ISP_violated.cpp) \| [Followed](2_SOLID/ISP/ISP_followed.cpp) | Splitting a fat `Shape` interface into `TwoDimensionalShape` and `ThreeDimensionalShape` so 2D shapes aren't forced to implement `volume()`. |
+| **D** | **Dependency Inversion Principle** | [Violated](2_SOLID/DIP/DIP_violated.cpp) \| [Followed](2_SOLID/DIP/DIP_followed.cpp) | Introducing an abstract `Database` interface so `UserService` depends on abstractions, not concrete MySQL/MongoDB classes. |
+
+#### LSP Rules — Deep Dive
+
+| Category | Rule | File | Summary |
+|---|---|---|---|
+| Signature | Return Type Covariance | [ReturnTypeRule.cpp](2_SOLID/LSP-Rules/SingatureRules/ReturnTypeRule.cpp) | Overridden methods must return the same or a narrower type. |
+| Signature | Method Argument Rule | [MethodArgumentRule.cpp](2_SOLID/LSP-Rules/SingatureRules/MethodArgumentRule.cpp) | Overridden methods must accept the same or wider argument types. |
+| Signature | Exception Rule | [ExceptionRule.cpp](2_SOLID/LSP-Rules/SingatureRules/ExceptionRule.cpp) | Subclass should throw fewer or narrower exceptions. |
+| Method | Precondition Weakening | [PreConditions.cpp](2_SOLID/LSP-Rules/MethodRules/PreConditions.cpp) | Subclass may relax but never strengthen preconditions. |
+| Method | Postcondition Strengthening | [PostConditions.cpp](2_SOLID/LSP-Rules/MethodRules/PostConditions.cpp) | Subclass may strengthen but never weaken postconditions. |
+| Properties | Class Invariant | [ClassInvariants.cpp](2_SOLID/LSP-Rules/PropertiesRules/ClassInvariants.cpp) | Subclass must maintain the parent's invariants. |
+| Properties | History Constraint | [HistoryConstraint.cpp](2_SOLID/LSP-Rules/PropertiesRules/HistoryConstraint.cpp) | Subclass must not disallow state transitions the parent allowed. |
 
 📖 **For full revision notes, architecture diagrams, and interview prep:** See [`2_SOLID/Solid.md`](2_SOLID/Solid.md).
 
@@ -74,7 +94,7 @@ Or run via **VS Code / Antigravity IDE** using the default build task (`Ctrl` + 
 ## 🚀 Roadmap
 
 - [x] **1. OOP Fundamentals**
-- [x] **2. SOLID Principles** (SRP, OCP, LSP covered with Before & After examples)
+- [x] **2. SOLID Principles** (SRP, OCP, LSP, ISP, DIP — all covered with Before & After examples + LSP Rules deep-dive)
 - [ ] **3. Creational Design Patterns** (Factory, Abstract Factory, Singleton, Builder, Prototype)
 - [ ] **4. Structural Design Patterns** (Adapter, Decorator, Facade, Composite, Proxy)
 - [ ] **5. Behavioral Design Patterns** (Strategy, Observer, Command, State, Chain of Responsibility)
