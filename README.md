@@ -20,6 +20,10 @@ LLD/
 │   │   ├── MethodRules/     # Precondition & postcondition rules
 │   │   └── PropertiesRules/ # Class invariants & history constraint
 │   └── Solid.md             # Comprehensive SOLID Revision Guide
+├── 3_GoogleDocs/            # LLD Case Study: Document Editor
+│   ├── BadDesign/           # Fragile monolithic implementation
+│   ├── GoodDesign/          # Decoupled polymorphic design (SOLID)
+│   └── README.md            # Revision Guide & Architecture Breakdown
 ├── .gitignore
 └── README.md
 ```
@@ -74,6 +78,18 @@ Detailed before-and-after implementations for each principle, accompanied by the
 | Properties | History Constraint | [HistoryConstraint.cpp](2_SOLID/LSP-Rules/PropertiesRules/HistoryConstraint.cpp) | Subclass must not disallow state transitions the parent allowed. |
 
 📖 **For full revision notes, architecture diagrams, and interview prep:** See [`2_SOLID/Solid.md`](2_SOLID/Solid.md).
+
+---
+
+## 3. Real-World LLD Case Studies
+
+Hands-on end-to-end design problems showing how SOLID principles and clean architectures evolve:
+
+| # | System | Code Examples | Description |
+|---|---|---|---|
+| 01 | **Document Editor (Google Docs)** | [Bad Design](3_GoogleDocs/BadDesign/DocumentEditor.cpp) \| [Good Design](3_GoogleDocs/GoodDesign/DocumentEditor.cpp) | Refactoring monolithic string parsing and direct file I/O into a polymorphic document element hierarchy with dependency injection. |
+
+📖 **For full revision guide:** See [`3_GoogleDocs/README.md`](3_GoogleDocs/README.md).
 
 ---
 
